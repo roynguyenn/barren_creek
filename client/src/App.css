@@ -1,0 +1,535 @@
+/* ─── Design tokens ───────────────────────────────────────────── */
+:root {
+  --green-dark:    #2d4a35;
+  --green-mid:     #4a7c59;
+  --green-light:   #7ab48a;
+  --brown:         #7c5a2a;
+  --brown-light:   #c4956a;
+  --cream:         #f5f0e8;
+  --cream-dark:    #e8dfc8;
+  --gold:          #c8a84b;
+  --gold-dark:     #a07c20;
+  --text-dark:     #1a2614;
+  --text-mid:      #3d4f35;
+  --gray:          #9e9e9e;
+  --marker-locked: #b0a898;
+  --radius:        12px;
+  --shadow:        0 4px 24px rgba(0,0,0,0.18);
+}
+
+/* ─── App shell ───────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--green-dark);
+}
+
+/* ─── Header ──────────────────────────────────────────────────── */
+.app-header {
+  background: var(--green-dark);
+  padding: 10px 16px 6px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.app-subtitle {
+  font-size: 0.7rem;
+  color: var(--green-light);
+  margin: 2px 0 0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ─── Progress bar ────────────────────────────────────────────── */
+.progress-bar-wrapper {
+  background: var(--cream-dark);
+  padding: 8px 16px 6px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #d4c9b0;
+}
+
+.progress-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+
+.progress-label {
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.progress-fraction {
+  font-size: 0.7rem;
+  color: var(--text-mid);
+}
+
+.progress-track {
+  height: 8px;
+  background: #d0c8b4;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-mid), var(--gold));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.reset-btn {
+  background: none;
+  border: none;
+  font-size: 0.65rem;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 4px 0 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+.reset-btn:hover { color: var(--brown); }
+
+/* ─── Map wrapper ─────────────────────────────────────────────── */
+.map-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  background: var(--green-dark);
+}
+
+.map-inner {
+  position: relative;
+  /* keep map at a minimum useful width so markers stay tappable on small phones */
+  min-width: 600px;
+  width: 100%;
+}
+
+.map-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.map-placeholder {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--green-light);
+  text-align: center;
+  padding: 24px;
+  font-size: 0.9rem;
+}
+
+.map-placeholder code {
+  background: rgba(255,255,255,0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--gold);
+}
+
+/* ─── Zone markers ────────────────────────────────────────────── */
+.zone-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  /* min tap target */
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.marker-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border: 2.5px solid rgba(255,255,255,0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: Georgia, serif;
+}
+
+.zone-marker--locked .marker-number {
+  background: var(--marker-locked);
+  color: #fff;
+  opacity: 0.55;
+  border-color: rgba(255,255,255,0.3);
+}
+
+.zone-marker--available .marker-number {
+  background: var(--green-mid);
+  color: #fff;
+  box-shadow: 0 0 0 0 rgba(74,124,89,0.7);
+  animation: pulse 2s infinite;
+}
+
+.zone-marker--completed .marker-number {
+  background: var(--gold);
+  color: var(--text-dark);
+  border-color: #fff;
+}
+
+.zone-marker--available:hover .marker-number,
+.zone-marker--completed:hover .marker-number {
+  transform: scale(1.15);
+  box-shadow: var(--shadow);
+}
+
+.marker-label {
+  background: rgba(20, 35, 18, 0.82);
+  color: #fff;
+  font-size: 0.58rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(74, 124, 89, 0.75); }
+  70%  { box-shadow: 0 0 0 10px rgba(74, 124, 89, 0);   }
+  100% { box-shadow: 0 0 0 0   rgba(74, 124, 89, 0);    }
+}
+
+/* ─── Completion banner ───────────────────────────────────────── */
+.completion-banner {
+  background: linear-gradient(135deg, var(--gold), var(--brown-light));
+  color: var(--text-dark);
+  text-align: center;
+  padding: 10px 16px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ─── Panel overlay ───────────────────────────────────────────── */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 10, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  /* don't block scroll on iOS when panel is open */
+  overscroll-behavior: contain;
+}
+
+/* ─── Panel (bottom sheet) ────────────────────────────────────── */
+.panel {
+  background: var(--cream);
+  border-radius: 18px 18px 0 0;
+  width: 100%;
+  max-height: 88dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 32px rgba(0,0,0,0.25);
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  outline: none;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0);    }
+}
+
+.panel-handle {
+  width: 40px;
+  height: 4px;
+  background: #c8bfac;
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+
+.panel-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--cream-dark);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.panel-close-btn:hover { background: #d4c8ae; }
+
+.panel-header {
+  padding: 14px 48px 12px 20px;
+  border-bottom: 1px solid var(--cream-dark);
+  flex-shrink: 0;
+}
+
+.zone-badge {
+  display: inline-block;
+  background: var(--green-mid);
+  color: #fff;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  font-family: sans-serif;
+}
+
+.zone-name {
+  font-size: 1.3rem;
+  color: var(--text-dark);
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.zone-subtitle {
+  font-size: 0.82rem;
+  color: var(--brown);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ─── Panel scrollable content ────────────────────────────────── */
+.panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.panel-section {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--cream-dark);
+}
+
+.panel-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brown);
+  margin: 0 0 8px;
+  font-family: sans-serif;
+}
+
+.plant-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.plant-list li {
+  background: var(--cream-dark);
+  border: 1px solid #d0c4a8;
+  border-radius: 20px;
+  padding: 4px 11px;
+  font-size: 0.78rem;
+  color: var(--text-dark);
+}
+
+/* Plant photo gallery */
+.plant-photos {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.plant-photos:empty {
+  display: none;
+}
+
+.plant-photo {
+  flex: 0 0 120px;
+  scroll-snap-align: start;
+  margin: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--cream-dark);
+  border: 1px solid #d0c4a8;
+}
+
+.plant-photo img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.plant-photo-skeleton {
+  width: 120px;
+  height: 90px;
+  background: linear-gradient(90deg, #e8dfc8 25%, #f0e8d4 50%, #e8dfc8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.plant-photo figcaption {
+  font-size: 0.7rem;
+  color: var(--text-mid);
+  padding: 4px 6px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-text {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.pass-text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-mid);
+  margin: 0;
+  background: #eee8d4;
+  border-left: 3px solid var(--green-mid);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ─── Clue section ────────────────────────────────────────────── */
+.clue-section.clue-hidden {
+  opacity: 0.6;
+}
+
+.clue-section.clue-revealed {
+  opacity: 1;
+}
+
+.clue-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  font-style: italic;
+  margin: 0;
+  background: var(--cream-dark);
+  border-left: 3px solid var(--gold);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  animation: fadeReveal 0.5s ease;
+}
+
+.clue-locked-text {
+  font-size: 0.82rem;
+  color: var(--gray);
+  margin: 0;
+  font-style: italic;
+}
+
+@keyframes fadeReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ─── Panel footer ────────────────────────────────────────────── */
+.panel-footer {
+  padding: 12px 20px 16px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--cream-dark);
+}
+
+.btn-complete,
+.btn-continue,
+.btn-celebrate {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-complete {
+  background: var(--green-mid);
+  color: #fff;
+}
+
+.btn-complete:active { transform: scale(0.97); opacity: 0.9; }
+
+.btn-continue {
+  background: var(--cream-dark);
+  color: var(--text-dark);
+  border: 1.5px solid #c8bfac;
+}
+
+.btn-celebrate {
+  background: linear-gradient(135deg, var(--gold), var(--brown-light));
+  color: var(--text-dark);
+}
+
+/* ─── Responsive fine-tuning ──────────────────────────────────── */
+@media (min-width: 640px) {
+  .panel {
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .zone-name { font-size: 1.5rem; }
+  .marker-number { width: 42px; height: 42px; font-size: 1rem; }
+  .marker-label { font-size: 0.65rem; max-width: 110px; }
+}
+
