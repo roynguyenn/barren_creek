@@ -1,11 +1,11 @@
 /* --- Design tokens ------------------------------------------- */
 :root {
   --bg:           #f7f8f2;
-  --grey-green:   #89b48e;
+  --grey-green:   #9eb48e;
   --dark-grey:    #545454;
   --river-blue:   #4f63c4;
-  --earth-green:  #2f6b3f;
-  --earth-dark:   #1e4a2a;
+  --earth-green:  #9eb48e;
+  --earth-dark:   #6a8f6a;
   --panel-bg:     #f7f8f2;
   --card-bg:      #edf2eb;
   --border:       rgba(137,180,142,0.38);
@@ -412,7 +412,7 @@
   left: 0;
   right: 0;
   height: 40px;
-  background: linear-gradient(to bottom, transparent, #2f6b3f);
+  background: linear-gradient(to bottom, transparent, var(--earth-green));
   pointer-events: none;
 }
 
@@ -433,8 +433,8 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255,255,255,0.14);
-  color: #a8d4b0;
+  background: rgba(255,255,255,0.40);
+  color: rgba(26, 50, 26, 0.85);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
@@ -449,7 +449,7 @@
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #f7f8f2;
+  color: #1a2e1a;
   line-height: 1.1;
   margin: 0 0 6px;
   letter-spacing: -0.01em;
@@ -459,7 +459,7 @@
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 0.9rem;
   font-style: italic;
-  color: rgba(168, 212, 176, 0.75);
+  color: rgba(26, 50, 26, 0.72);
   margin: 0;
 }
 
@@ -742,8 +742,8 @@
 }
 
 .hero-btn {
-  background: #2f6b3f;
-  color: #f7f8f2;
+  background: var(--earth-green);
+  color: #1a2e1a;
   font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
