@@ -15,8 +15,8 @@ export default function FarmMap({ zones, completed, nextZoneId, onMarkerClick })
       <div className="map-inner">
         {imgError ? (
           <div className="map-placeholder">
-            <p>📍 Place the aerial farm photo at</p>
-            <code>client/public/farm-map.jpg</code>
+            <p>Place the aerial farm photo at</p>
+            <code>client/public/farm-map.png</code>
             <p>to see the map here.</p>
           </div>
         ) : (
@@ -28,12 +28,13 @@ export default function FarmMap({ zones, completed, nextZoneId, onMarkerClick })
             draggable={false}
           />
         )}
-        {zones.map((zone) => (
+        {zones.map((zone, idx) => (
           <ZoneMarker
             key={zone.id}
             zone={zone}
             status={getStatus(zone)}
             onClick={onMarkerClick}
+            index={idx}
           />
         ))}
       </div>

@@ -1,43 +1,59 @@
 import { useState, useEffect } from 'react';
+import { Flower2 } from 'lucide-react';
 
 export default function PlantPhoto({ name }) {
   const [imgUrl, setImgUrl] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
     setImgUrl(null);
     setLoaded(false);
-    setMissing(false);
 
-    // strip parentheticals and extra notes for cleaner search
-    const query = name.split('(')[0].split('+')[0].trim().replace(/\s+/g, '_');
+    const query = name.split('(')[0].split('+')[0].trim();
 
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`)
+    const params = new URLSearchParams({
+      action: 'query',
+      generator: 'search',
+      gsrsearch: query,
+      gsrlimit: '1',
+      prop: 'pageimages',
+      piprop: 'thumbnail',
+      pithumbsize: '200',
+      format: 'json',
+      origin: '*',
+    });
+
+    fetch(`https://en.wikipedia.org/w/api.php?${params}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.thumbnail?.source) {
-          setImgUrl(data.thumbnail.source);
-        } else {
-          setMissing(true);
+        const pages = data?.query?.pages;
+        if (pages) {
+          const page = Object.values(pages)[0];
+          if (page?.thumbnail?.source) {
+            setImgUrl(page.thumbnail.source);
+          }
         }
       })
-      .catch(() => setMissing(true));
+      .catch(() => {});
   }, [name]);
-
-  if (missing) return null;
 
   return (
     <figure className="plant-photo">
-      {!loaded && <div className="plant-photo-skeleton" />}
-      {imgUrl && (
-        <img
-          src={imgUrl}
-          alt={name}
-          loading="lazy"
-          onLoad={() => setLoaded(true)}
-          style={{ display: loaded ? 'block' : 'none' }}
-        />
+      {loaded && imgUrl ? (
+        <img src={imgUrl} alt={name} loading="lazy" />
+      ) : (
+        <div className="plant-photo-icon">
+          {imgUrl ? (
+            <img
+              src={imgUrl}
+              alt={name}
+              loading="lazy"
+              onLoad={() => setLoaded(true)}
+              style={{ display: 'none' }}
+            />
+          ) : null}
+          <Flower2 size={30} strokeWidth={1.25} color="var(--grey-green)" />
+        </div>
       )}
       <figcaption>{name}</figcaption>
     </figure>

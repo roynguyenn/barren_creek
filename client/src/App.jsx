@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { TreePine } from 'lucide-react';
 import ProgressBar from './components/ProgressBar';
 import FarmMap from './components/FarmMap';
 import ZonePanel from './components/ZonePanel';
+import HeroScreen from './components/HeroScreen';
 import { ZONES } from './data/zones';
 import './App.css';
 
 const STORAGE_KEY = 'barren-creek-completed-zones';
 
 function App() {
+  const [showHero, setShowHero] = useState(true);
+
   const [completed, setCompleted] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -50,8 +55,18 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <>
+      <AnimatePresence>
+        {showHero && (
+          <HeroScreen key="hero" onEnter={() => setShowHero(false)} />
+        )}
+      </AnimatePresence>
+
+      <div className="app">
       <header className="app-header">
+        <div className="header-icon">
+          <TreePine size={20} strokeWidth={1.5} />
+        </div>
         <h1 className="app-title">The Farm Trials</h1>
         <p className="app-subtitle">Barren Creek Farm · 11-Zone Scavenger Hunt</p>
       </header>
@@ -65,21 +80,32 @@ function App() {
         onMarkerClick={handleMarkerClick}
       />
 
-      {allDone && (
-        <div className="completion-banner">
-          🎉 You completed all 11 zones! The Farm Trials are done.
-        </div>
-      )}
+      <AnimatePresence>
+        {allDone && (
+          <motion.div
+            className="completion-banner"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+          >
+            🎉 You completed all 11 zones! The Farm Trials are done.
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {activeZone && (
-        <ZonePanel
-          zone={activeZone}
-          isCompleted={completed.includes(activeZone.id)}
-          onComplete={() => handleComplete(activeZone.id)}
-          onClose={handleClose}
-        />
-      )}
-    </div>
+      <AnimatePresence>
+        {activeZone && (
+          <ZonePanel
+            zone={activeZone}
+            isCompleted={completed.includes(activeZone.id)}
+            onComplete={() => handleComplete(activeZone.id)}
+            onClose={handleClose}
+          />
+        )}
+      </AnimatePresence>
+      </div>
+    </>
   );
 }
 

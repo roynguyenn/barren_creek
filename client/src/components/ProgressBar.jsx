@@ -1,3 +1,6 @@
+import { Compass } from 'lucide-react';
+import { motion } from 'framer-motion';
+
 export default function ProgressBar({ completed, total, onReset }) {
   const percent = Math.round((completed / total) * 100);
 
@@ -5,14 +8,22 @@ export default function ProgressBar({ completed, total, onReset }) {
     <div className="progress-bar-wrapper">
       <div className="progress-bar-header">
         <span className="progress-label">
-          {completed === total
-            ? '🎉 All zones complete!'
-            : `Zone ${completed + 1} of ${total}`}
+          <span className="progress-label-inner">
+            <Compass size={13} strokeWidth={2} color="var(--earth-green)" />
+            {completed === total
+              ? 'All zones complete!'
+              : `Zone ${completed + 1} of ${total}`}
+          </span>
         </span>
         <span className="progress-fraction">{completed}/{total}</span>
       </div>
       <div className="progress-track">
-        <div className="progress-fill" style={{ width: `${percent}%` }} />
+        <motion.div
+          className="progress-fill"
+          animate={{ width: `${percent}%` }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          style={{ width: `${percent}%` }}
+        />
       </div>
       {completed > 0 && (
         <button className="reset-btn" onClick={onReset}>
