@@ -387,7 +387,7 @@
 /* --- Illustration hero -------------------------------------- */
 .illus-hero {
   width: 100%;
-  height: 220px;
+  height: 280px;
   background: #f0ebe0;
   position: relative;
   overflow: hidden;
@@ -402,7 +402,7 @@
   height: 100%;
   max-width: 100%;
   object-fit: contain;
-  padding: 32px 24px 12px; /* top pad keeps image below the handle */
+  padding: 20px 16px 4px;
   display: block;
 }
 
@@ -411,7 +411,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 40px;
   background: linear-gradient(to bottom, transparent, #2f6b3f);
   pointer-events: none;
 }
