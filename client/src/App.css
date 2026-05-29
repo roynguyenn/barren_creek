@@ -148,15 +148,26 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  background: #c5d5c7;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Sage green painted-paper base */
+  background-color: #c5d5c7;
+
+  /* Linen/canvas grain via SVG fractal noise, tiled */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E"),
+    /* Soft tonal variation so the field doesn't look flat */
+    radial-gradient(ellipse at 28% 22%, rgba(255,255,255,0.09) 0%, transparent 52%),
+    radial-gradient(ellipse at 74% 80%, rgba(0,0,0,0.05)      0%, transparent 48%);
 }
 
 .map-inner {
   position: relative;
 }
+
+/* No vignette or overlay — map image is shown as-is */
 
 .map-image {
   display: block;
