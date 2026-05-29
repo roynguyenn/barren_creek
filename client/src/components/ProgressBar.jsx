@@ -15,7 +15,12 @@ export default function ProgressBar({ completed, total, onReset }) {
               : `Zone ${completed + 1} of ${total}`}
           </span>
         </span>
-        <span className="progress-fraction">{completed}/{total}</span>
+        <span className="progress-bar-right">
+          <span className="progress-fraction">{completed}/{total}</span>
+          {completed > 0 && (
+            <button className="reset-btn" onClick={onReset}>reset</button>
+          )}
+        </span>
       </div>
       <div className="progress-track">
         <motion.div
@@ -25,11 +30,6 @@ export default function ProgressBar({ completed, total, onReset }) {
           style={{ width: `${percent}%` }}
         />
       </div>
-      {completed > 0 && (
-        <button className="reset-btn" onClick={onReset}>
-          reset progress
-        </button>
-      )}
     </div>
   );
 }

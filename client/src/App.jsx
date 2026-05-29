@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { TreePine } from 'lucide-react';
+import { TreePine, Map, BookOpen } from 'lucide-react';
 import ProgressBar from './components/ProgressBar';
 import FarmMap from './components/FarmMap';
 import ZonePanel from './components/ZonePanel';
 import HeroScreen from './components/HeroScreen';
+import TourScript from './components/TourScript';
 import { ZONES } from './data/zones';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
   });
 
   const [activeZoneId, setActiveZoneId] = useState(null);
+  const [activeTab, setActiveTab] = useState('map');
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
@@ -71,39 +73,61 @@ function App() {
         <p className="app-subtitle">Barren Creek Farm · 11-Zone Scavenger Hunt</p>
       </header>
 
-      <ProgressBar completed={completed.length} total={ZONES.length} onReset={handleReset} />
+      {/* Tab Bar */}
+      <div className="tab-bar">
+        <button
+          className={`tab-btn${activeTab === 'map' ? ' tab-btn--active' : ''}`}
+          onClick={() => setActiveTab('map')}
+        >
+          <Map size={14} strokeWidth={2} /> The Hunt
+        </button>
+        <button
+          className={`tab-btn${activeTab === 'tour' ? ' tab-btn--active' : ''}`}
+          onClick={() => setActiveTab('tour')}
+        >
+          <BookOpen size={14} strokeWidth={2} /> Tour Guide
+        </button>
+      </div>
 
-      <FarmMap
-        zones={ZONES}
-        completed={completed}
-        nextZoneId={nextZoneId}
-        onMarkerClick={handleMarkerClick}
-      />
+      {activeTab === 'map' ? (
+        <>
+          <ProgressBar completed={completed.length} total={ZONES.length} onReset={handleReset} />
 
-      <AnimatePresence>
-        {allDone && (
-          <motion.div
-            className="completion-banner"
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          >
-            🎉 You completed all 11 zones! The Farm Trials are done.
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {activeZone && (
-          <ZonePanel
-            zone={activeZone}
-            isCompleted={completed.includes(activeZone.id)}
-            onComplete={() => handleComplete(activeZone.id)}
-            onClose={handleClose}
+          <FarmMap
+            zones={ZONES}
+            completed={completed}
+            nextZoneId={nextZoneId}
+            onMarkerClick={handleMarkerClick}
           />
-        )}
-      </AnimatePresence>
+
+          <AnimatePresence>
+            {allDone && (
+              <motion.div
+                className="completion-banner"
+                initial={{ y: 80, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 80, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              >
+                🎉 You completed all 11 zones! The Farm Trials are done.
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {activeZone && (
+              <ZonePanel
+                zone={activeZone}
+                isCompleted={completed.includes(activeZone.id)}
+                onComplete={() => handleComplete(activeZone.id)}
+                onClose={handleClose}
+              />
+            )}
+          </AnimatePresence>
+        </>
+      ) : (
+        <TourScript />
+      )}
       </div>
     </>
   );

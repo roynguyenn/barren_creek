@@ -87,6 +87,7 @@ export default function ZonePanel({ zone, isCompleted, onComplete, onClose }) {
             <h3 className="section-title">
               <Leaf size={13} strokeWidth={2} />
               Plants Here
+              <span className="plants-hint">tap a card to reveal a real photo</span>
             </h3>
             <ul className="plant-list">
               {zone.plants.map((p) => <li key={p}>{p}</li>)}
