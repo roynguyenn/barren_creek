@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { TreePine, Map, BookOpen } from 'lucide-react';
+import { TreePine, Map, BookOpen, Globe } from 'lucide-react';
 import ProgressBar from './components/ProgressBar';
 import FarmMap from './components/FarmMap';
 import ZonePanel from './components/ZonePanel';
@@ -87,6 +87,12 @@ function App() {
         >
           <BookOpen size={14} strokeWidth={2} /> Tour Guide
         </button>
+        <button
+          className={`tab-btn${activeTab === 'satellite' ? ' tab-btn--active' : ''}`}
+          onClick={() => setActiveTab('satellite')}
+        >
+          <Globe size={14} strokeWidth={2} /> Realistic Map
+        </button>
       </div>
 
       {activeTab === 'map' ? (
@@ -127,6 +133,15 @@ function App() {
             )}
           </AnimatePresence>
         </>
+      ) : activeTab === 'satellite' ? (
+        <div className="satellite-wrapper">
+          <img
+            src="/farm-map.png"
+            alt="Barren Creek Farm realistic map"
+            className="satellite-img"
+            draggable={false}
+          />
+        </div>
       ) : (
         <TourScript />
       )}
