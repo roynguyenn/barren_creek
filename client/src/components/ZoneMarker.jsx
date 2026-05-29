@@ -13,7 +13,7 @@ export default function ZoneMarker({ zone, status, onClick, index }) {
       disabled={isLocked}
       initial={{ scale: 0, opacity: 0, y: 8 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 380, damping: 22, delay: index * 0.055 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 22, delay: 0.18 + index * 0.055 }}
       whileTap={!isLocked ? { scale: 0.82 } : {}}
     >
       <div className="marker-pin">

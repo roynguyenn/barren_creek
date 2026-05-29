@@ -93,12 +93,14 @@ function App() {
         <>
           <ProgressBar completed={completed.length} total={ZONES.length} onReset={handleReset} />
 
-          <FarmMap
-            zones={ZONES}
-            completed={completed}
-            nextZoneId={nextZoneId}
-            onMarkerClick={handleMarkerClick}
-          />
+          {!showHero && (
+            <FarmMap
+              zones={ZONES}
+              completed={completed}
+              nextZoneId={nextZoneId}
+              onMarkerClick={handleMarkerClick}
+            />
+          )}
 
           <AnimatePresence>
             {allDone && (

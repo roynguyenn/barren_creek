@@ -184,16 +184,15 @@
 /* --- Zone markers ------------------------------------------- */
 .zone-marker {
   position: absolute;
+  width: 36px;
+  height: 36px;
   transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
   z-index: 5;
+  overflow: visible;
 }
 
 /* Pin teardrop shape */
@@ -262,8 +261,12 @@
 .zone-marker--locked .marker-pin-inner { color: rgba(84,84,84,0.45); }
 .zone-marker--locked { cursor: default; }
 
-/* zone name label */
+/* zone name label — absolutely positioned so it never shifts the pin anchor */
 .marker-label {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.58rem;
   font-weight: 600;
@@ -863,307 +866,341 @@
 }
 
 /* ================================================================
-   TOUR SCRIPT
+   TOUR SCRIPT — IMMERSIVE PARALLAX SCROLL
    ================================================================ */
-.tour-wrapper {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
 
-.tour-scroll {
+/* Scrollable page container; background color driven by framer-motion */
+.tour-page {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 12px 14px 16px;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.tour-hero {
+  min-height: 52vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-/* --- Agreements --- */
-.tour-agreements {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.agreements-toggle {
-  width: 100%;
-  display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  text-align: center;
+  padding: 52px 28px 40px;
+  background: linear-gradient(
+    160deg,
+    rgba(47, 107, 63, 0.16) 0%,
+    rgba(47, 107, 63, 0.03) 55%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgba(47, 107, 63, 0.1);
+}
+
+.tour-hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--earth-green);
+  margin: 0 0 10px;
+}
+
+.tour-hero-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  font-weight: 700;
+  color: var(--earth-dark);
+  line-height: 1.08;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.tour-hero-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  color: var(--grey-green);
+  line-height: 1.65;
+  max-width: 310px;
+  margin: 0 0 28px;
+}
+
+.tour-scroll-hint {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--earth-green);
+  opacity: 0.65;
+}
+
+/* ── Section wrapper ─────────────────────────────────────── */
+.tour-fade-section {
+  padding: 40px 18px 32px;
+}
+
+.tour-agreements-section {
+  max-width: 540px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tour-section-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--earth-green);
+  margin: 0 0 8px;
+}
+
+.tour-section-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--earth-dark);
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Agreements list ─────────────────────────────────────── */
+.tour-agreements-ul {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tour-agree-li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   padding: 10px 14px;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(47, 107, 63, 0.14);
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--earth-dark);
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.agreements-toggle-title {
-  flex: 1;
-}
-
-.agreements-badge {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--grey-green);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2px 8px;
-}
-
-.agreements-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 14px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.agreement-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--dark-grey);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.18s, border-color 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.agreement-item--checked {
-  background: rgba(47, 107, 63, 0.07);
+.tour-agree-li--on {
+  background: rgba(47, 107, 63, 0.09);
   border-color: var(--earth-green);
   color: var(--earth-dark);
 }
 
-.agree-icon {
+.tour-agree-check {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1px;
   color: var(--grey-green);
 }
 
-.agree-icon--checked {
+.tour-agree-li--on .tour-agree-check {
   color: var(--earth-green);
 }
 
-.agreements-prompt {
+.tour-quote {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-style: italic;
   color: var(--grey-green);
-  line-height: 1.55;
+  line-height: 1.7;
+  border-left: 3px solid var(--earth-green);
   margin: 0;
-  padding: 8px 14px 12px;
-  border-top: 1px solid var(--divider);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* --- Stop Cards --- */
-.tour-stops-list {
+/* ── Divider strand ──────────────────────────────────────── */
+.tour-strand {
+  height: 1px;
+  margin: 0 20px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(47, 107, 63, 0.22) 28%,
+    rgba(47, 107, 63, 0.22) 72%,
+    transparent
+  );
+}
+
+/* ── Individual stop outer container ────────────────────── */
+.tour-stop-outer {
+  position: relative;
+  padding: 44px 18px 22px;
+  overflow: hidden; /* clip the oversized deco number */
+}
+
+/* Big decorative number — parallax layer */
+.stop-deco-num {
+  position: absolute;
+  top: 16px;
+  right: -6px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 6.8rem;
+  font-weight: 900;
+  color: var(--earth-dark);
+  opacity: 0.055;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+/* ── Stop card ───────────────────────────────────────────── */
+.tour-stop-card {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(47, 107, 63, 0.13);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px 20px;
+  box-shadow: 0 3px 22px rgba(0, 0, 0, 0.07);
+  max-width: 540px;
+  margin: 0 auto;
+  will-change: opacity, transform;
+}
+
+.stop-card-head {
   display: flex;
-  flex-direction: column;
-  gap: 7px;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(47, 107, 63, 0.1);
 }
 
-.stop-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.stop-card--active {
-  border-color: var(--earth-green);
-  box-shadow: 0 2px 14px rgba(47, 107, 63, 0.14);
-  cursor: default;
-}
-
-.stop-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-}
-
-.stop-icon {
-  font-size: 1.3rem;
+.stop-card-icon {
+  font-size: 1.85rem;
   line-height: 1;
   flex-shrink: 0;
 }
 
-.stop-meta {
-  flex: 1;
+.stop-card-meta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  gap: 3px;
 }
 
-.stop-num {
+.stop-card-badge {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--earth-green);
 }
 
-.stop-title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.84rem;
-  font-weight: 600;
+.stop-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--earth-dark);
-  line-height: 1.3;
+  margin: 0;
+  line-height: 1.25;
 }
 
-.stop-location {
+.stop-card-loc {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.68rem;
   color: var(--grey-green);
 }
 
-.stop-chevron {
-  flex-shrink: 0;
-  color: var(--grey-green);
+.stop-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.stop-body {
-  padding: 0 14px 14px;
-  border-top: 1px solid var(--divider);
-  padding-top: 12px;
-}
-
-.stop-para {
+.stop-card-para {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.84rem;
-  line-height: 1.7;
+  font-size: 0.85rem;
+  line-height: 1.75;
   color: var(--dark-grey);
-  margin: 0 0 10px;
+  margin: 0;
   white-space: pre-line;
 }
 
-.stop-para:last-of-type {
-  margin-bottom: 0;
-}
-
-/* Guide prompts callout */
-.stop-prompts {
-  margin-top: 12px;
-  background: rgba(180, 140, 40, 0.08);
-  border: 1px solid rgba(180, 140, 40, 0.28);
+/* ── Guide prompts callout ───────────────────────────────── */
+.stop-card-prompts {
+  margin-top: 16px;
+  background: rgba(175, 130, 20, 0.09);
+  border: 1px solid rgba(175, 130, 20, 0.26);
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
 
-.stop-prompts-header {
+.stop-prompts-hd {
   display: flex;
   align-items: center;
   gap: 5px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #9a7020;
-  margin-bottom: 7px;
+  color: #9a6b0e;
+  margin-bottom: 9px;
 }
 
-.stop-prompts-list {
+.stop-prompts-ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
-.stop-prompts-list li {
+.stop-prompts-ul li {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.79rem;
+  font-size: 0.8rem;
   line-height: 1.5;
-  color: #7a5a18;
-  padding-left: 14px;
+  color: #7a540e;
+  padding-left: 16px;
   position: relative;
 }
 
-.stop-prompts-list li::before {
+.stop-prompts-ul li::before {
   content: '→';
   position: absolute;
   left: 0;
   color: #b8860b;
 }
 
-/* --- Tour nav bar --- */
-.tour-nav {
-  flex-shrink: 0;
+/* ── End of tour footer ──────────────────────────────────── */
+.tour-end {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: var(--card-bg);
-  border-top: 1px solid var(--divider);
+  padding: 52px 24px calc(36px + env(safe-area-inset-bottom));
   gap: 12px;
 }
 
-.tour-nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 16px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--earth-green);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  -webkit-tap-highlight-color: transparent;
+.tour-end-leaf {
+  font-size: 2.2rem;
+  opacity: 0.7;
 }
 
-.tour-nav-btn:hover:not(:disabled) {
-  background: rgba(47, 107, 63, 0.07);
-  border-color: var(--earth-green);
-}
-
-.tour-nav-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.tour-nav-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--earth-dark);
+.tour-end p {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--grey-green);
+  margin: 0;
   text-align: center;
 }
-
-.tour-nav-of {
-  font-weight: 400;
-  color: var(--grey-green);
-}
-

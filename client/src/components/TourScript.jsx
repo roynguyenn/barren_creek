@@ -1,165 +1,213 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, MapPin, MessageSquare, ArrowLeft, ArrowRight, CheckSquare, Square } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
+import { MapPin, MessageSquare, CheckSquare, Square } from 'lucide-react';
 import { AGREEMENTS, SILENCE_PROMPT, TOUR_STOPS } from '../data/tourStops';
 
 export default function TourScript() {
-  const [activeStop, setActiveStop] = useState(1);
   const [agreed, setAgreed] = useState([]);
-  const [agreementsOpen, setAgreementsOpen] = useState(true);
-  const activeRef = useRef(null);
+  const pageRef = useRef(null);
 
-  useEffect(() => {
-    activeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [activeStop]);
+  // Track scroll progress within the tour page container
+  const { scrollYProgress } = useScroll({ container: pageRef });
+
+  // Background shifts from cool forest green → warm earthy gold as you scroll
+  const hue   = useTransform(scrollYProgress, [0, 1], [115, 38]);
+  const sat   = useTransform(scrollYProgress, [0, 1], [18,  22]);
+  const light = useTransform(scrollYProgress, [0, 1], [96,  93]);
+  const bgColor = useMotionTemplate`hsl(${hue}, ${sat}%, ${light}%)`;
 
   function toggleAgreement(i) {
-    setAgreed(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
-  }
-
-  function goTo(n) {
-    setActiveStop(Math.max(1, Math.min(TOUR_STOPS.length, n)));
+    setAgreed(prev =>
+      prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
+    );
   }
 
   return (
-    <div className="tour-wrapper">
-      <div className="tour-scroll">
+    <motion.div
+      ref={pageRef}
+      className="tour-page"
+      style={{ backgroundColor: bgColor }}
+    >
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <motion.div
+        className="tour-hero"
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <span className="tour-hero-eyebrow">Barren Creek Farm</span>
+        <h2 className="tour-hero-title">Farm Tour Guide</h2>
+        <p className="tour-hero-sub">
+          A guided walk through the land, its stories, and its harvests.
+        </p>
+        <motion.div
+          className="tour-scroll-hint"
+          animate={{ y: [0, 7, 0] }}
+          transition={{ repeat: Infinity, duration: 1.9, ease: 'easeInOut' }}
+        >
+          ↓ Scroll to begin
+        </motion.div>
+      </motion.div>
 
-        {/* Community Agreements */}
-        <div className="tour-agreements">
-          <button
-            className="agreements-toggle"
-            onClick={() => setAgreementsOpen(o => !o)}
-          >
-            <span className="agreements-toggle-title">🤝 Community Agreements</span>
-            <span className="agreements-badge">{agreed.length}/{AGREEMENTS.length} agreed</span>
-            {agreementsOpen ? <ChevronUp size={14} strokeWidth={2} /> : <ChevronDown size={14} strokeWidth={2} />}
-          </button>
-
-          <AnimatePresence initial={false}>
-            {agreementsOpen && (
-              <motion.div
-                key="agreements"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
-                style={{ overflow: 'hidden' }}
+      {/* ── Community Agreements ─────────────────────────── */}
+      <FadeSection className="tour-agreements-section">
+        <p className="tour-section-eyebrow">🤝 Before we begin</p>
+        <h3 className="tour-section-heading">Community Agreements</h3>
+        <ul className="tour-agreements-ul">
+          {AGREEMENTS.map((a, i) => (
+            <FadeItem key={i} delay={0.06 + i * 0.08}>
+              <li
+                className={`tour-agree-li${agreed.includes(i) ? ' tour-agree-li--on' : ''}`}
+                onClick={() => toggleAgreement(i)}
               >
-                <ul className="agreements-list">
-                  {AGREEMENTS.map((a, i) => (
-                    <li
-                      key={i}
-                      className={`agreement-item${agreed.includes(i) ? ' agreement-item--checked' : ''}`}
-                      onClick={() => toggleAgreement(i)}
-                    >
-                      {agreed.includes(i)
-                        ? <CheckSquare size={15} strokeWidth={2} className="agree-icon agree-icon--checked" />
-                        : <Square size={15} strokeWidth={1.5} className="agree-icon" />}
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="agreements-prompt">"{SILENCE_PROMPT}"</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Tour Stops */}
-        <div className="tour-stops-list">
-          {TOUR_STOPS.map(stop => (
-            <StopCard
-              key={stop.id}
-              stop={stop}
-              isActive={stop.id === activeStop}
-              ref={stop.id === activeStop ? activeRef : null}
-              onActivate={() => setActiveStop(stop.id)}
-            />
+                <span className="tour-agree-check">
+                  {agreed.includes(i)
+                    ? <CheckSquare size={16} strokeWidth={2} />
+                    : <Square size={16} strokeWidth={1.5} />}
+                </span>
+                <span>{a}</span>
+              </li>
+            </FadeItem>
           ))}
-        </div>
-      </div>
+        </ul>
+        <motion.blockquote
+          className="tour-quote"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.7 }}
+          transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          "{SILENCE_PROMPT}"
+        </motion.blockquote>
+      </FadeSection>
 
-      {/* Sticky nav bar */}
-      <div className="tour-nav">
-        <button
-          className="tour-nav-btn"
-          onClick={() => goTo(activeStop - 1)}
-          disabled={activeStop === 1}
-        >
-          <ArrowLeft size={15} strokeWidth={2.5} /> Prev
-        </button>
-        <span className="tour-nav-label">
-          Stop {activeStop} <span className="tour-nav-of">of {TOUR_STOPS.length}</span>
-        </span>
-        <button
-          className="tour-nav-btn"
-          onClick={() => goTo(activeStop + 1)}
-          disabled={activeStop === TOUR_STOPS.length}
-        >
-          Next <ArrowRight size={15} strokeWidth={2.5} />
-        </button>
-      </div>
-    </div>
+      <div className="tour-strand" />
+
+      {/* ── Tour Stops ───────────────────────────────────── */}
+      {TOUR_STOPS.map(stop => (
+        <StopSection key={stop.id} stop={stop} />
+      ))}
+
+      {/* ── End ──────────────────────────────────────────── */}
+      <motion.div
+        className="tour-end"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 1 }}
+      >
+        <span className="tour-end-leaf">🌿</span>
+        <p>End of Tour — Thank you for walking with us.</p>
+      </motion.div>
+    </motion.div>
   );
 }
 
-import { forwardRef } from 'react';
+/* ── Section wrapper: fades in from below when scrolled to ── */
+function FadeSection({ children, className }) {
+  return (
+    <motion.section
+      className={`tour-fade-section ${className ?? ''}`}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.section>
+  );
+}
 
-const StopCard = forwardRef(function StopCard({ stop, isActive, onActivate }, ref) {
+/* ── Individual stagger child ────────────────────────────── */
+function FadeItem({ children, delay = 0 }) {
   return (
     <motion.div
-      ref={ref}
-      className={`stop-card${isActive ? ' stop-card--active' : ''}`}
-      layout="position"
-      onClick={() => !isActive && onActivate()}
+      initial={{ opacity: 0, y: 22 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.35 }}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="stop-card-header">
-        <span className="stop-icon">{stop.icon}</span>
-        <div className="stop-meta">
-          <span className="stop-num">Stop {stop.id}</span>
-          <span className="stop-title">{stop.title}</span>
-          <span className="stop-location">
-            <MapPin size={10} strokeWidth={2} /> {stop.location}
-          </span>
-        </div>
-        <span className="stop-chevron">
-          {isActive ? <ChevronUp size={15} strokeWidth={2} /> : <ChevronDown size={15} strokeWidth={2} />}
-        </span>
-      </div>
-
-      <AnimatePresence initial={false}>
-        {isActive && (
-          <motion.div
-            key="body"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div className="stop-body">
-              {stop.body.map((para, i) => (
-                <p key={i} className="stop-para">{para}</p>
-              ))}
-
-              {stop.prompts.length > 0 && (
-                <div className="stop-prompts">
-                  <div className="stop-prompts-header">
-                    <MessageSquare size={12} strokeWidth={2} />
-                    Guide prompts
-                  </div>
-                  <ul className="stop-prompts-list">
-                    {stop.prompts.map((p, i) => (
-                      <li key={i}>{p}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {children}
     </motion.div>
   );
-});
+}
+
+/* ── One stop ────────────────────────────────────────────── */
+function StopSection({ stop }) {
+  const sectionRef = useRef(null);
+
+  // Track this section's scroll position for parallax on the deco number
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const decoY = useTransform(scrollYProgress, [0, 1], ['-28px', '28px']);
+
+  return (
+    <section ref={sectionRef} className="tour-stop-outer">
+      {/* Big decorative stop number — moves at a different speed (parallax) */}
+      <motion.div className="stop-deco-num" style={{ y: decoY }} aria-hidden>
+        {String(stop.id).padStart(2, '0')}
+      </motion.div>
+
+      {/* Card fades in from below */}
+      <motion.div
+        className="tour-stop-card"
+        initial={{ opacity: 0, y: 56 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.08 }}
+        transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Header */}
+        <div className="stop-card-head">
+          <span className="stop-card-icon">{stop.icon}</span>
+          <div className="stop-card-meta">
+            <span className="stop-card-badge">Stop {stop.id}</span>
+            <h3 className="stop-card-title">{stop.title}</h3>
+            <span className="stop-card-loc">
+              <MapPin size={10} strokeWidth={2} /> {stop.location}
+            </span>
+          </div>
+        </div>
+
+        {/* Body paragraphs — each fades in with slight stagger */}
+        <div className="stop-card-body">
+          {stop.body.map((para, i) => (
+            <motion.p
+              key={i}
+              className="stop-card-para"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.08 + i * 0.1,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {para}
+            </motion.p>
+          ))}
+        </div>
+
+        {/* Guide prompts callout */}
+        {stop.prompts.length > 0 && (
+          <motion.div
+            className="stop-card-prompts"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className="stop-prompts-hd">
+              <MessageSquare size={12} strokeWidth={2} /> Guide prompts
+            </span>
+            <ul className="stop-prompts-ul">
+              {stop.prompts.map((p, i) => <li key={i}>{p}</li>)}
+            </ul>
+          </motion.div>
+        )}
+      </motion.div>
+    </section>
+  );
+}
