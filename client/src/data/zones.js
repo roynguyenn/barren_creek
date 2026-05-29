@@ -29,7 +29,7 @@ export const ZONES = [
     id: 3,
     name: 'Hedgerow / Food Forest',
     subtitle: 'The Wild Zone',
-    position: { left: '17%', top: '76%' },
+    position: { left: '17%', top: '70%' },
     illustration: '/illustrations/hedgerow_iig.PNG',
     plants: ['Australian mint bush', 'Mixed hedgerow plantings'],
     task: `No plant list this time. Instead, find:\n\n• Something taller than you\n• Something touching another plant\n• Something insects would love\n• The strongest smell\n\nSecret task: find proof this area behaves more like nature than a farm.`,
